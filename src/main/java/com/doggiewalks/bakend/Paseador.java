@@ -14,7 +14,7 @@ public class Paseador {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private  String nombre;
+    private String nombre;
 
     @Column(name = "experiencia_anos")
     private int experienciaAnos;
@@ -27,7 +27,6 @@ public class Paseador {
 
     private String certificaciones;
 
-
-
-
+    @Column(name = "bio_marketing")
+    private String bioMarketing;
 }
