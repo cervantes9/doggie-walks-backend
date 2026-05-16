@@ -34,6 +34,19 @@ public class ReservaController {
                     .body("Ya existe una reserva con ese email para esa fecha.");
         }
 
+        // Verificamos si el paseador ya tiene una reserva en esa fecha y hora
+        if (nuevaReserva.getIdPaseador() != null && nuevaReserva.getIdPaseador() != 0) {
+            if (reservaRepository.existsByIdPaseadorAndFechaAndHora(
+                    nuevaReserva.getIdPaseador(),
+                    nuevaReserva.getFecha(),
+                    nuevaReserva.getHora())) {
+                return ResponseEntity
+                        .status(423)
+                        .body("El paseador seleccionado no está disponible en esa fecha y hora. Por favor elige otro horario.");
+            }
+        }
+
+        // Si pasa todas las validaciones, guardamos la reserva
         nuevaReserva.setFechaCreacion(LocalDateTime.now());
         nuevaReserva.setEstado("pendiente");
         return ResponseEntity.ok(reservaRepository.save(nuevaReserva));
