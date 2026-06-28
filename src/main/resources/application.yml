@@ -1,18 +1,18 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/doggie_walks
-    username: doggie_user
-    password: doggie_password
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/doggie_walks}
+    username: ${SPRING_DATASOURCE_USERNAME:doggie_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:doggie_password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update  # Esto hace que si cambias tu clase Java, la BD se actualice sola (magia)
-    show-sql: true      # Para ver las consultas en la consola
+      ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
-        format_sql: true # Para ver el SQL bonito
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: 8080
+  port: ${PORT:8080}
