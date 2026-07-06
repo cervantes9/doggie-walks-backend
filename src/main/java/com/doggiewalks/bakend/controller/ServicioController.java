@@ -7,19 +7,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController // 1. "Soy un mesero que sirve datos crudos (JSON), no páginas web (JSP)" //Controller
-@RequestMapping("/api/servicios") // 2. "Atiendo en esta dirección URL" //@Path
-@CrossOrigin(origins = "*") // 3. "Dejo entrar a cualquier página web que me pida datos (Angular)"
+@RestController
+@RequestMapping("/api/servicios")
+@CrossOrigin(origins = "*") // permite peticiones desde el frontend (CORS)
 public class ServicioController {
 
-    // 4. Llamamos al chef (El repositorio)
-    @Autowired // En Web III: Usabas @Inject para traer a tu Repositorio.java gigante
+    @Autowired
     private ServicioRepository servicioRepository;
 
-    // 5. Cuando alguien entre con el método GET a la URL de arriba, ejecuta esto:
+    // Devuelve el listado de servicios
     @GetMapping
     public List<Servicio> obtenerTodosLosServicios() {
-        // Le pedimos al chef que busque todos los servicios en la BD y los devuelva
         return servicioRepository.findAll();
     }
 }

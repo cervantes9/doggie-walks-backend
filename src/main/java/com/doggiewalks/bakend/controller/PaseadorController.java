@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController //@Controller
-@RequestMapping("/api/paseadores") //Path
-@CrossOrigin(origins = "*") // Dejo entrar a cualquier página web que me pida datos (Angular)"
+@RestController
+@RequestMapping("/api/paseadores")
+@CrossOrigin(origins = "*") // permite peticiones desde el frontend (CORS)
 public class PaseadorController {
 
-    @Autowired // esto es como Inject en MVC
-    private PaseadorRepository paseadorRepository; // llamar repositorio Inject
+    @Autowired
+    private PaseadorRepository paseadorRepository;
 
-    @GetMapping // // Cuando alguien entre con el método GET a la URL de arriba, ejecuta esto:
+    @GetMapping // Devuelve el listado de paseadores
     public List<Paseador> getPaseadores(){
         return paseadorRepository.findAll();
     }
