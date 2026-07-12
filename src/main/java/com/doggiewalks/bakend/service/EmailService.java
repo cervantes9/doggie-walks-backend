@@ -1,29 +1,38 @@
 package com.doggiewalks.bakend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
-
     @Value("${spring.mail.username}")
     private String remitente;
 
-    // Envía un correo de texto simple. Si falla, lo registra pero NO rompe la operación principal.
+    @Value("${BREVO_API_KEY:}")
+    private String brevoApiKey;
+
+    private final RestClient http = RestClient.create();
+
+    // Envía el correo vía la API HTTPS de Brevo (Railway bloquea el SMTP saliente).
     public void enviar(String para, String asunto, String cuerpo) {
         try {
-            SimpleMailMessage mensaje = new SimpleMailMessage();
-            mensaje.setFrom(remitente);
-            mensaje.setTo(para);
-            mensaje.setSubject(asunto);
-            mensaje.setText(cuerpo);
-            mailSender.send(mensaje);
+            http.post()
+                    .uri("https://api.brevo.com/v3/smtp/email")
+                    .header("api-key", brevoApiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of(
+                            "sender", Map.of("name", "Doggie Walks", "email", remitente),
+                            "to", List.of(Map.of("email", para)),
+                            "subject", asunto,
+                            "textContent", cuerpo))
+                    .retrieve()
+                    .toBodilessEntity();
         } catch (Exception e) {
             System.err.println("No se pudo enviar el correo a " + para + ": " + e.getMessage());
         }
