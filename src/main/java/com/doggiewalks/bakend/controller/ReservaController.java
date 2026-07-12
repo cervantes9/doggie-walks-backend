@@ -5,6 +5,7 @@ import com.doggiewalks.bakend.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import com.doggiewalks.bakend.service.EmailService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +17,9 @@ public class ReservaController {
 
     @Autowired
     private ReservaRepository reservaRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     // Para ver todas las reservas (para el administrador)
     @GetMapping
@@ -49,6 +53,21 @@ public class ReservaController {
         // Si pasa todas las validaciones, guardamos la reserva
         nuevaReserva.setFechaCreacion(LocalDateTime.now());
         nuevaReserva.setEstado("pendiente");
-        return ResponseEntity.ok(reservaRepository.save(nuevaReserva));
+        Reserva guardada = reservaRepository.save(nuevaReserva);
+
+        emailService.enviar(
+                guardada.getEmail(),
+                "Tu reserva en Doggie Walks quedó registrada",
+                "Hola " + guardada.getNombreCliente() + ",\n\n"
+                        + "¡Recibimos tu reserva! Estos son los datos:\n\n"
+                        + "Tipo de paseo: " + guardada.getTipoPaseo() + "\n"
+                        + "Fecha: " + guardada.getFecha() + "\n"
+                        + "Hora: " + guardada.getHora() + "\n\n"
+                        + "Te contactaremos a la brevedad posible por via telefónica.\n\n"
+                        + "Gracias por confiar en nosotros.\n"
+                        + "El equipo de Doggie Walks"
+        );
+
+        return ResponseEntity.ok(guardada);
     }
 }
